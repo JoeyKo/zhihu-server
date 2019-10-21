@@ -9,9 +9,20 @@ services:
     volumes:
       ['./:/usr/src/app']
     links:
+      - redis
       - mongo
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    command: 
+      'redis-server'
   mongo:
     container_name: mongo
     image: mongo
     ports:
       - '27017:27017'
+networks:
+  redis:
+    driver: bridge
