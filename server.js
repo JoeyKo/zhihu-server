@@ -2,11 +2,10 @@ const express = require('express')
 const mongoose = require('mongoose')
 const app = express()
 const redis = require("redis")
-const session = require('express-session')
-const logger = require('./middlewares/logger')
+const config = require('./config')
 
 // Connect to MongoDB
-const mongoURI = 'mongodb://mongo:27017/zhihu-app'
+const mongoURI = config.DB
 const options = { useNewUrlParser: true, useUnifiedTopology: true }
 mongoose.connect(mongoURI, options)
 .then(res => {
@@ -14,25 +13,19 @@ mongoose.connect(mongoURI, options)
 })
 .catch(err => console.log('Mongodb error: ', err));
 
-// redis and session
-const RedisStore = require('connect-redis')(session)
+// redis
 const redisClient = redis.createClient(6379, 'redis')
-
-app.use(
-  session({
-    store: new RedisStore({ client: redisClient }),
-    secret: 'zhihu',
-    resave: false,
-    cookie: { secure: true }
-  })
-)
+redisClient.on('connect',()=>{
+  console.log('Redis client connected')
+  });
 redisClient.on("error", function (err) {
   console.log("Redis error: " + err);
 });
 
 // json parser
 app.use(express.json())
-// app.use(logger())
+// urlencoded payloads
+app.use(express.urlencoded({ extended: true }))
 
 // api routes
 const routes = require('./routes')
@@ -49,6 +42,6 @@ app.use(function (error, req, res, next) {
   res.status(500).send('Interval server error!')
 })
 
-const port = 3000;
+const port = config.PORT;
 
-app.listen(port, () => console.log('Server running...'));
+app.listen(port, () => console.log('xServer running...'));

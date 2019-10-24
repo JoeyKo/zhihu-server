@@ -3,12 +3,12 @@ const router = express.Router()
 
 const user = require('./user')
 const store = require('./store')
-
+const { Auth } = require('../helpers');
 
 router.route('/')
-  .get((req, res) => {
-    console.log(req.session)
-    res.status(200).json({ session: req.session })
+  .get(Auth, (req, res) => {
+    console.log('health check!', process.env.NODE_ENV)
+    res.status(200).json({ msg: 'health check!' })
   })
 
 

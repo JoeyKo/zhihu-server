@@ -1,7 +1,0 @@
-{
-  "env": {
-    "MONGO_USER": "admin",
-    "MONGO_PASSWORD": "MKz6VvPVakaYVsdv",
-    "MONGO_DB": "sample_mflix"
-  }
-}
