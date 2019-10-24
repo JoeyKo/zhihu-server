@@ -12,6 +12,7 @@ router.route('/regist')
       const userExist = await User.findOne({ email: req.body.email })
       if (userExist) {
         res.status(200).json({ success: false, msg: `user ${req.body.email} already exists!` })
+        return
       }
       const newUser = new User({
         email: req.body.email,
@@ -31,6 +32,7 @@ router.route('/login')
       const userExist = await User.findOne({ email: req.body.email })
       if (!userExist) {
         res.status(200).json({ success: false, msg: 'user dosn\'t exist!' })
+        return
       }
       const isMatched = await userExist.comparePassword(req.body.password)
       if (isMatched) {
