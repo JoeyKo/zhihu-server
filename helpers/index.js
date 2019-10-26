@@ -1,2 +1,2 @@
 exports.APIError = require('./APIError');
-exports.Auth = require('./Auth');
+exports.Authenticate = require('./Authenticate');

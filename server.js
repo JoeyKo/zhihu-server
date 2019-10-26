@@ -1,11 +1,11 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const app = express()
-const redis = require("redis")
+const cookieParser = require('cookie-parser')
 const config = require('./config')
 
 // Connect to MongoDB
-const mongoURI = config.DB
+const mongoURI = config.DB_URI
 const options = { useNewUrlParser: true, useUnifiedTopology: true }
 mongoose.connect(mongoURI, options)
 .then(res => {
@@ -13,19 +13,12 @@ mongoose.connect(mongoURI, options)
 })
 .catch(err => console.log('Mongodb error: ', err));
 
-// redis
-const redisClient = redis.createClient(6379, 'redis')
-redisClient.on('connect',()=>{
-  console.log('Redis client connected')
-  });
-redisClient.on("error", function (err) {
-  console.log("Redis error: " + err);
-});
-
 // json parser
 app.use(express.json())
 // urlencoded payloads
 app.use(express.urlencoded({ extended: true }))
+// cookie parser
+app.use(cookieParser())
 
 // api routes
 const routes = require('./routes')
