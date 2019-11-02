@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const user = require('./user')
+const article = require('./article')
 const store = require('./store')
 const authenticate = require('../middlewares/Authenticate');
 
@@ -11,5 +12,4 @@ router.route('/')
     res.status(200).json({ msg: 'health check!' })
   })
 
-
-module.exports = [user, store, router]
+module.exports = [user, article, store, router]

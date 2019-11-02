@@ -2,16 +2,17 @@ const express = require('express')
 const mongoose = require('mongoose')
 const app = express()
 const cookieParser = require('cookie-parser')
-const config = require('./config')
 
 // Connect to MongoDB
-const mongoURI = config.DB_URI
-const options = { useNewUrlParser: true, useUnifiedTopology: true }
-mongoose.connect(mongoURI, options)
-.then(res => {
-  console.log('MongoDB Connected')
-})
-.catch(err => console.log('Mongodb error: ', err));
+const options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}
+mongoose.connect(process.env.MONGO_URI, options)
+  .then(res => {
+    console.log('MongoDB Connected', res.connections)
+  })
+  .catch(err => console.log('Mongodb error: ', err, process.env.MONGO_URI));
 
 // json parser
 app.use(express.json())
@@ -35,6 +36,5 @@ app.use(function (error, req, res, next) {
   res.status(500).send('Interval server error!')
 })
 
-const port = config.PORT;
-
-app.listen(port, () => console.log('xServer running...'));
+const port = process.env.SERVER_PORT;
+app.listen(port, () => console.log('Server running...', port));

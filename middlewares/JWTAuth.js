@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const config = require('../config')
 
 const JWTAuth = function (req, res, next) {
   // check header or url parameters or post parameters for token
@@ -7,7 +6,7 @@ const JWTAuth = function (req, res, next) {
   // decode token
   if (token) {
     // verifies secret and checks exp
-    jwt.verify(token, config.JWT_SECRET, function (err, decoded) {
+    jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
       if (err) {
         return res.status(401).json({
           success: false,

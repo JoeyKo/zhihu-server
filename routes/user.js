@@ -2,9 +2,8 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { redis, redisClient } = require('../db/redis')
-const User = require("../models/User")
+const User = require("../models/user")
 
-const config = require('../config')
 const authenticate = require('../middlewares/Authenticate')
 
 // regist
@@ -22,10 +21,11 @@ router.route('/regist')
       const userCreated = await newUser.save()
       const token = generateAndStoreToken(userCreated) 
       res.cookie("token", token, { httpOnly: true })
-      redisClient.set(`${userExist.id}_${token}`, true, redis.print);
+      redisClient.set(`${userCreated.id}_${token}`, true, redis.print);
       res.status(200).json({ msg: `${userCreated.email} regist successfully!` });
     } catch (err) {
-      res.status(500).json({ msg: err })
+      console.log(err)
+      res.status(500).json({ msg: err.message })
     }
   });
 
@@ -50,7 +50,8 @@ router.route('/login')
         res.status(200).json({ success: false, msg: 'wrong passwrod!' })
       }
     } catch (err) {
-      res.status(500).json({ msg: err })
+      console.log(err)
+      res.status(500).json({ msg: err.message })
     }
   })
 
@@ -68,8 +69,8 @@ function generateAndStoreToken(user) {
   return jwt.sign({ 
     uid: user.id,
     role: user.role
-  }, config.JWT_SECRET, {
-    expiresIn: config.JWT_EXPIRATION
+  }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRATION
   })
 }
 

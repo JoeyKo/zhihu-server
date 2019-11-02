@@ -5,12 +5,20 @@ const bcrypt = require('bcryptjs')
 const userSchema = new Schema({
   email: {
     type: String,
+    trim: true,
     unique: true,
-    required: true
+    required: true,
+    validate: [validateEmail, 'Please fill a valid email address']
+  },
+  username: {
+    type: String,
+    trim: true
   },
   password: {
     type: String,
-    required: true
+    trim: true,
+    required: true,
+    minlength: 6
   }
 },{ timestamps:true });
 
@@ -28,5 +36,10 @@ userSchema.pre('save', async function(next) {
 userSchema.methods.comparePassword = function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password)
 }
+
+function validateEmail(email) {
+  const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  return re.test(email)
+};
 
 module.exports = mongoose.model('user', userSchema);
