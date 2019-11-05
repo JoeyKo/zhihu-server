@@ -4,6 +4,7 @@ const router = express.Router()
 const user = require('./user')
 const article = require('./article')
 const store = require('./store')
+const upload = require('./upload')
 const authenticate = require('../middlewares/Authenticate');
 
 router.route('/')
@@ -12,4 +13,4 @@ router.route('/')
     res.status(200).json({ msg: 'health check!' })
   })
 
-module.exports = [user, article, store, router]
+module.exports = [user, upload, article, store, router]

@@ -1,3 +1,10 @@
+const mongoosePaginate = require('mongoose-paginate-v2');
+
+mongoosePaginate.paginate.options = { 
+  lean: true,
+  limit: 20
+};
+
 module.exports = {
-  APP_NAME: 'zhihu'
+  APP_NAME: 'zhihu',
 }

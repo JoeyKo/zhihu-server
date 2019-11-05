@@ -1,7 +1,11 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const app = express()
+const cors = require('cors')
+const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
+const fileUpload = require('express-fileupload');
+const config = require('./config')
 
 // Connect to MongoDB
 const options = {
@@ -14,12 +18,23 @@ mongoose.connect(process.env.MONGO_URI, options)
   })
   .catch(err => console.log('Mongodb error: ', err, process.env.MONGO_URI));
 
+// cors 
+app.use(cors())
+
+// requests log
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
+
 // json parser
 app.use(express.json())
+
 // urlencoded payloads
 app.use(express.urlencoded({ extended: true }))
+
 // cookie parser
 app.use(cookieParser())
+
+// fileupload
+app.use(fileUpload());
 
 // api routes
 const routes = require('./routes')
