@@ -7,8 +7,12 @@ const storeSchema = new Schema({
     type: String,
     required: true
   },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }
 })
 
 storeSchema.plugin(mongoosePaginate);
 
-module.exports = Store = mongoose.model('store', storeSchema)
+module.exports = Store = mongoose.model('Store', storeSchema)

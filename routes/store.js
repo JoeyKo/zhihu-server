@@ -5,7 +5,7 @@ const Store = require('../models/store')
 router.route('/store')
   .get(async (req, res) => {
     try {
-      const stores = await Store.paginate()
+      const stores = await Store.paginate('', { populate: 'user' })
       res.status(200).json({ data: stores })
     } catch (err) {
       res.status(404).json({ msg: 'No items found' })
@@ -14,8 +14,10 @@ router.route('/store')
 
   .post(async (req, res) => {
     try {
+      const { location, user } = req.body
       const newItem = new Store({
-        location: req.body.location
+        location,
+        user
       })
       const storeCreated = await newItem.save()
       res.status(200).json({ data: storeCreated })

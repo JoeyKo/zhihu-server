@@ -19,7 +19,7 @@ router.route('/regist')
         password: req.body.password
       });
       const userCreated = await newUser.save()
-      const token = generateAndStoreToken(userCreated) 
+      const token = generateAndStoreToken(userCreated)
       res.cookie("token", token, { httpOnly: true })
       redisClient.set(`${userCreated.id}_${token}`, true, redis.print);
       res.status(200).json({ msg: `${userCreated.email} regist successfully!` });
@@ -42,7 +42,7 @@ router.route('/login')
         redisClient.scan('0', 'MATCH', `${userExist.id}_*`, (err, results) => {
           if (!err) results.map(item => redisClient.del(item))
         })
-        const token = generateAndStoreToken(userExist) 
+        const token = generateAndStoreToken(userExist)
         res.cookie("token", token, { httpOnly: true })
         redisClient.set(`${userExist.id}_${token}`, true, redis.print);
         res.status(200).json({ msg: 'login successfully!' })
@@ -65,8 +65,24 @@ router.route('/logout')
     res.status(200).json({ msg: 'logout successfully!' })
   })
 
+
+// me 
+router.route('/me')
+  .get(authenticate, async (req, res) => {
+    try {
+      const { uid } = res.locals
+      const profile = await User.findById(uid).select({
+         email: 1,
+         gender: 1
+      })
+      res.status(200).json({ data: profile })
+    } catch (err) {
+      res.status(500).json({ msg: err.message })
+    }
+  })
+
 function generateAndStoreToken(user) {
-  return jwt.sign({ 
+  return jwt.sign({
     uid: user.id,
     role: user.role
   }, process.env.JWT_SECRET, {

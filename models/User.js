@@ -10,17 +10,29 @@ const userSchema = new Schema({
     required: true,
     validate: [validateEmail, 'Please fill a valid email address']
   },
-  username: {
-    type: String,
-    trim: true
-  },
   password: {
     type: String,
     trim: true,
     required: true,
     minlength: 6
+  },
+  username: {
+    type: String,
+    trim: true
+  },
+  headline: {
+    type: String,
+  },
+  gender: {
+    type: Number,
+    enum: [0, 1], // 0 is female, 1 is male
+    default: 1,
+  },
+  avatar_url: {
+    type: Schema.Types.ObjectId,
+    ref: 'File'
   }
-},{ timestamps:true });
+},{ timestamps: true });
 
 userSchema.pre('save', async function(next) {
   try {
@@ -42,4 +54,4 @@ function validateEmail(email) {
   return re.test(email)
 };
 
-module.exports = mongoose.model('user', userSchema);
+module.exports = mongoose.model('User', userSchema);

@@ -10,7 +10,7 @@ router.route('/article')
       const { page } = req.query
       const limit = 20
       const offset = (page ? page - 1 : 0) * limit
-      const articles = await Article(sequelize, DataTypes).findAndCountAll({ 
+      const articles = await Article(sequelize, DataTypes).findAndCountAll({
         limit,
         offset
       })
@@ -26,7 +26,7 @@ router.route('/article')
       const article = await Article(sequelize, DataTypes).create({ title, description })
       res.status(200).json({ data: article })
     } catch (err) {
-      res.status(404).json({ msg: 'article create failed: ', err }) 
+      res.status(404).json({ msg: 'article create failed: ', err })
     }
   })
 
