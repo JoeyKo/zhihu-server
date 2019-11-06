@@ -5,7 +5,10 @@ const Store = require('../models/store')
 router.route('/store')
   .get(async (req, res) => {
     try {
-      const stores = await Store.paginate('', { populate: 'user' })
+      const stores = await Store.paginate('', {
+        select: { location: 1, user: 1 },
+        populate: { path: 'user' }
+      })
       res.status(200).json({ data: stores })
     } catch (err) {
       res.status(404).json({ msg: 'No items found' })

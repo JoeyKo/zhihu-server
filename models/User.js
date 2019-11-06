@@ -14,7 +14,8 @@ const userSchema = new Schema({
     type: String,
     trim: true,
     required: true,
-    minlength: 6
+    minlength: [6, "Password is too short"],
+    select: false
   },
   username: {
     type: String,
@@ -45,8 +46,8 @@ userSchema.pre('save', async function(next) {
   }
 })
 
-userSchema.methods.comparePassword = function(candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password)
+userSchema.methods.comparePassword = function(user, candidatePassword) {
+  return bcrypt.compare(candidatePassword, user.password);
 }
 
 function validateEmail(email) {
@@ -54,4 +55,4 @@ function validateEmail(email) {
   return re.test(email)
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = User = mongoose.model('User', userSchema);

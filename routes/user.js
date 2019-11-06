@@ -33,11 +33,12 @@ router.route('/regist')
 router.route('/login')
   .post(async (req, res) => {
     try {
-      const userExist = await User.findOne({ email: req.body.email })
+      // select('password') => user data with password
+      const userExist = await User.findOne({ email: req.body.email }).select('password')
       if (!userExist) {
         return res.status(200).json({ success: false, msg: 'user dosn\'t exist!' })
       }
-      const isMatched = await userExist.comparePassword(req.body.password)
+      const isMatched = await userExist.comparePassword(userExist, req.body.password)
       if (isMatched) {
         redisClient.scan('0', 'MATCH', `${userExist.id}_*`, (err, results) => {
           if (!err) results.map(item => redisClient.del(item))
