@@ -1,0 +1,22 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Zhihu",
+    "description": "zhihu api docs",
+    "version": "1.0.0"
+  },
+  "basePath": "/api",
+  "produces": ["application/json"],
+  "paths": {
+    "/login": {
+      "post": {
+        "tags": ["/user"],
+        "parameters": [
+          { "name": "email", "in": "formData", "required": true, "type": "string", "default": "joeyko@test.com" },
+          { "name": "password", "in": "formData", "type": "string", "required": true, "default": "123456" }
+        ],
+        "responses": {}
+      }
+    }
+  }
+}

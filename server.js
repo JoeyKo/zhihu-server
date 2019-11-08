@@ -6,6 +6,11 @@ const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const fileUpload = require('express-fileupload');
 const config = require('./config')
+const { scheduleInit } = require('./scripts/clean_tmp_files')
+
+//swagger
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger/swagger.json');
 
 // Connect to MongoDB
 const options = {
@@ -14,9 +19,9 @@ const options = {
 }
 mongoose.connect(process.env.MONGO_URI, options)
   .then(res => {
-    console.log('MongoDB Connected', res.connections)
+    console.log('>>>>>>>>>> MongoDB Connected!')
   })
-  .catch(err => console.log('Mongodb error: ', err, process.env.MONGO_URI));
+  .catch(err => console.log('Mongodb error: ', err));
 
 // cors 
 app.use(cors())
@@ -40,6 +45,9 @@ app.use(fileUpload());
 const routes = require('./routes')
 app.use('/api', routes)
 
+// api docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 // 404
 app.use(function (req, res, next) {
   res.status(404).send('Sorry can\'t find that!')
@@ -52,4 +60,8 @@ app.use(function (error, req, res, next) {
 })
 
 const port = process.env.SERVER_PORT;
-app.listen(port, () => console.log('Server running...', port));
+app.listen(port, () => {
+  console.log('Server running...', port)
+  // start node schedule
+  scheduleInit()
+});

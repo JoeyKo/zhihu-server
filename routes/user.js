@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
+const cloudinary = require('cloudinary').v2;
 const { redis, redisClient } = require('../db/redis')
 const User = require("../models/user")
 
@@ -77,6 +78,20 @@ router.route('/me')
          gender: 1
       })
       res.status(200).json({ data: profile })
+    } catch (err) {
+      res.status(500).json({ msg: err.message })
+    }
+  })
+
+  .put(authenticate, async (req, res) => {
+    try {
+      const { avatar } = req.body
+      // replace tmp tag to avatar
+      await uploader.replace_tag('avatar', [avatar]);
+      // move tmp file to avatar folder
+      const avatarRenamed = await cloudinary.uploader.rename(avatar, `avatar/${avatar}`);
+      // cron run 
+      res.status(200).json({ data: avatarRenamed })
     } catch (err) {
       res.status(500).json({ msg: err.message })
     }
