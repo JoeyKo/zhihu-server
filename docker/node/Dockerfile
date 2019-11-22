@@ -4,6 +4,8 @@ RUN apk add --no-cache bash
 
 WORKDIR /app
 
+RUN npm install pm2 -g
+
 COPY package*.json ./
 RUN npm install
 
