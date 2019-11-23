@@ -7,7 +7,7 @@ const store = require('./store')
 const upload = require('./upload')
 const authenticate = require('../middlewares/Authenticate');
 
-const logger = require('../utils/logger')
+const { logger } = require('../helpers')
 
 router.route('/health-check')
   .get(authenticate, (req, res) => {
