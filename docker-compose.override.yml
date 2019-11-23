@@ -1,0 +1,2 @@
+# docker-compose up to run dev configuration
+version: '3'
