@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const ampqlib = require('amqplib')
 const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
@@ -22,6 +23,32 @@ mongoose.connect(process.env.MONGO_URI, options)
     console.log('>>>>>>>>>> MongoDB Connected!')
   })
   .catch(err => console.log('Mongodb error: ', err));
+
+// rabbitMQ
+const q = 'tasks'
+console.log(process.env.RABBITMQ_USER, process.env.RABBITMQ_PASS)
+const open = ampqlib.connect(`amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@rabbitmq:5672`);
+
+open.then(conn => {
+  return conn.createChannel()
+}).then(ch => {
+  return ch.assertQueue(q).then(() => {
+    return ch.sendToQueue(q, Buffer.from('something to do'));
+  });
+}).catch(console.warn);
+
+open.then(conn => {
+  return conn.createChannel();
+}).then(ch => {
+  return ch.assertQueue(q).then(() => {
+    return ch.consume(q, msg => {
+      if (msg !== null) {
+        console.log(msg.content.toString());
+        ch.ack(msg);
+      }
+    });
+  });
+}).catch(console.warn);
 
 // cors 
 app.use(cors())
