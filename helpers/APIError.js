@@ -5,24 +5,28 @@ class APIError extends Error {
    * @param {Number} status - The HTTP Status Code (e.g. 404)
    * @param {String} title - The title corresponding to the Status Code (e.g. Bad Request)
    * @param {String} message - Specific information about what caused the error
+   * @param {Boolean} isOperational - if you're using some centralized error factory
    */
   constructor(
     status = 500,
     title = 'Internal Server Error',
-    message = 'An unknown server error occurred.'
+    message = 'An unknown server error occurred.',
+    isOperational = false,
   ) {
     super(message);
     this.status = status;
     this.title = title;
     this.message = message;
+    this.isOperational = isOperational
   }
   toJSON() {
-    const { status, title, message } = this;
+    const { status, title, message, isOperational } = this;
     return {
       error: {
         status,
         title,
-        message
+        message,
+        isOperational
       }
     };
   }

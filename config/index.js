@@ -13,5 +13,5 @@ cloudinary.config({
 });
 
 module.exports = {
-  APP_NAME: 'zhihu',
+  
 }

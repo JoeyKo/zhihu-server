@@ -76,7 +76,7 @@ app.use('/api', routes)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // 404
-app.use(function (req, res, next) {
+app.all('*', function (req, res, next) {
   res.status(404).send('Sorry can\'t find that!')
 })
 
