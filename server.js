@@ -6,8 +6,10 @@ const cors = require('cors')
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const fileUpload = require('express-fileupload');
-const config = require('./config')
 const { scheduleInit } = require('./scripts/clean_tmp_files')
+
+// config 
+require('./config')
 
 //swagger
 const swaggerUi = require('swagger-ui-express');
@@ -26,14 +28,13 @@ mongoose.connect(process.env.MONGO_URI, options)
 
 // rabbitMQ
 const q = 'tasks'
-console.log(process.env.RABBITMQ_USER, process.env.RABBITMQ_PASS)
 const open = ampqlib.connect(`amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@rabbitmq:5672`);
 
 open.then(conn => {
   return conn.createChannel()
 }).then(ch => {
   return ch.assertQueue(q).then(() => {
-    return ch.sendToQueue(q, Buffer.from('something to do'));
+    return ch.sendToQueue(q, Buffer.from('rabbitMQ has something to do'));
   });
 }).catch(console.warn);
 
@@ -50,29 +51,28 @@ open.then(conn => {
   });
 }).catch(console.warn);
 
-// cors 
-app.use(cors())
-
-// requests log
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
-
 // json parser
 app.use(express.json())
 
 // urlencoded payloads
 app.use(express.urlencoded({ extended: true }))
 
-// cookie parser
+// cors middleware
+app.use(cors())
+
+// log middleware
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
+
+// cookie parser middleware
 app.use(cookieParser())
 
-// fileupload
+// fileupload middleware
 app.use(fileUpload());
 
 // api routes
-const routes = require('./routes')
-app.use('/api', routes)
+require('./routes')
 
-// api docs
+// api swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // 404

@@ -3,7 +3,7 @@ const cloudinary = require('cloudinary').v2;
 
 function scheduleInit() {
   console.log('******** schedule ********')
-  CronJob('5 0 * * *', function () {
+  new CronJob('*/25 * * * * *', () => {
     cloudinary.api.delete_resources_by_tag('tmp', function(err, result) {
       if (err) console.log(err)
       console.log(result.deleted)
@@ -11,7 +11,9 @@ function scheduleInit() {
         console.log(`tmp file ${key} ${result.deleted[key]}`);
       }
     })
-  });
+  }, () => {
+    console.log('cron job error')
+  }, true);
 }
 
 module.exports = {
