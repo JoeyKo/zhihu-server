@@ -11,22 +11,19 @@ class APIError extends Error {
     status = 500,
     title = 'Internal Server Error',
     message = 'An unknown server error occurred.',
-    isOperational = false,
   ) {
     super(message);
     this.status = status;
     this.title = title;
     this.message = message;
-    this.isOperational = isOperational
   }
   toJSON() {
-    const { status, title, message, isOperational } = this;
+    const { status, title, message } = this;
     return {
       error: {
         status,
         title,
-        message,
-        isOperational
+        message
       }
     };
   }

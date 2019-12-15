@@ -11,6 +11,8 @@ const { scheduleInit } = require('./scripts/clean_tmp_files')
 // config 
 require('./config')
 
+const { errorHandler } = require('./handlers');
+
 //swagger
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/swagger.json');
@@ -70,21 +72,16 @@ app.use(cookieParser())
 app.use(fileUpload());
 
 // api routes
-require('./routes')
+require('./routes')(app)
 
 // api swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // 404
-app.all('*', function (req, res, next) {
-  res.status(404).send('Sorry can\'t find that!')
-})
+app.use(errorHandler.fourOhFourHandler)
 
 // 5xx
-app.use(function (error, req, res, next) {
-  console.error(error.stack)
-  res.status(500).send('Interval server error!')
-})
+app.use(errorHandler.globalErrorHandler)
 
 const port = process.env.SERVER_PORT;
 app.listen(port, () => {
