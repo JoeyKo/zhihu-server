@@ -1,6 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const ampqlib = require('amqplib')
+
 const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
@@ -8,59 +8,34 @@ const cookieParser = require('cookie-parser')
 const fileUpload = require('express-fileupload');
 const { scheduleInit } = require('./scripts/clean_tmp_files')
 
-// config 
+// config
 require('./config')
 
+mongoDBConnect()
+
 const { errorHandler } = require('./handlers');
+const {
+  bodyParserHandler,
+  globalErrorHandler,
+  fourOhFourHandler,
+  fourOhFiveHandler
+} = errorHandler
 
 //swagger
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/swagger.json');
 
-// Connect to MongoDB
-const options = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}
-mongoose.connect(process.env.MONGO_URI, options)
-  .then(res => {
-    console.log('>>>>>>>>>> MongoDB Connected!')
-  })
-  .catch(err => console.log('Mongodb error: ', err));
-
-// rabbitMQ
-const q = 'tasks'
-const open = ampqlib.connect(`amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@rabbitmq:5672`);
-
-open.then(conn => {
-  return conn.createChannel()
-}).then(ch => {
-  return ch.assertQueue(q).then(() => {
-    return ch.sendToQueue(q, Buffer.from('rabbitMQ has something to do'));
-  });
-}).catch(console.warn);
-
-open.then(conn => {
-  return conn.createChannel();
-}).then(ch => {
-  return ch.assertQueue(q).then(() => {
-    return ch.consume(q, msg => {
-      if (msg !== null) {
-        console.log(msg.content.toString());
-        ch.ack(msg);
-      }
-    });
-  });
-}).catch(console.warn);
-
-// json parser
-app.use(express.json())
+// cors middleware
+app.use(cors())
 
 // urlencoded payloads
 app.use(express.urlencoded({ extended: true }))
 
-// cors middleware
-app.use(cors())
+// json parser
+app.use(express.json())
+
+// error handling specific to body parser only
+app.use(bodyParserHandler)
 
 // log middleware
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
@@ -77,15 +52,30 @@ require('./routes')(app)
 // api swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// 404
-app.use(errorHandler.fourOhFourHandler)
+// catch-all for 404 "Not Found" errors
+app.use(fourOhFourHandler)
 
-// 5xx
-app.use(errorHandler.globalErrorHandler)
+// catch-all for 405 "Method Not Allowed" errors
+app.use(fourOhFiveHandler)
 
-const port = process.env.SERVER_PORT;
-app.listen(port, () => {
-  console.log('Server running...', port)
-  // start node schedule
+app.use(globalErrorHandler)
+
+app.listen(process.env.SERVER_PORT, () => {
+  console.log('Server is running.')
+  // schedule init
   scheduleInit()
 });
+
+// Connect to MongoDB
+async function mongoDBConnect() {
+  try {
+    const options = {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    }
+    const res = await mongoose.connect(process.env.MONGO_URI, options)
+    console.log('>>>>>>>>>> MongoDB Connected!', res)
+  } catch (err) {
+    err => console.log('Mongodb error: ', err)
+  }
+}

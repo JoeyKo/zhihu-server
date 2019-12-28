@@ -60,7 +60,7 @@ services:
     depends_on:
       - mongo
     command: bash -c "/usr/wait-for-it.sh --timeout=0 mongo:27017 && 
-              /usr/wait-for-it.sh --timeout=0 rabbitmq:5672 && npm start"
+            /usr/wait-for-it.sh --timeout=0 rabbitmq:5672 && npm run dev"
     links:
       - mysql
       - mongo
