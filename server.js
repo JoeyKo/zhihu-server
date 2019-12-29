@@ -1,67 +1,81 @@
 const express = require('express')
 const mongoose = require('mongoose')
+
 const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const fileUpload = require('express-fileupload');
-const config = require('./config')
 const { scheduleInit } = require('./scripts/clean_tmp_files')
+
+// config
+require('./config')
+
+mongoDBConnect()
+
+const { errorHandler } = require('./handlers');
+const {
+  bodyParserHandler,
+  globalErrorHandler,
+  fourOhFourHandler,
+  fourOhFiveHandler
+} = errorHandler
 
 //swagger
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/swagger.json');
 
-// Connect to MongoDB
-const options = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}
-mongoose.connect(process.env.MONGO_URI, options)
-  .then(res => {
-    console.log('>>>>>>>>>> MongoDB Connected!')
-  })
-  .catch(err => console.log('Mongodb error: ', err));
-
-// cors 
+// cors middleware
 app.use(cors())
-
-// requests log
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
-
-// json parser
-app.use(express.json())
 
 // urlencoded payloads
 app.use(express.urlencoded({ extended: true }))
 
-// cookie parser
+// json parser
+app.use(express.json())
+
+// error handling specific to body parser only
+app.use(bodyParserHandler)
+
+// log middleware
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
+
+// cookie parser middleware
 app.use(cookieParser())
 
-// fileupload
+// fileupload middleware
 app.use(fileUpload());
 
 // api routes
-const routes = require('./routes')
-app.use('/api', routes)
+require('./routes')(app)
 
-// api docs
+// api swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// 404
-app.use(function (req, res, next) {
-  res.status(404).send('Sorry can\'t find that!')
-})
+// catch-all for 404 "Not Found" errors
+app.use(fourOhFourHandler)
 
-// 5xx
-app.use(function (error, req, res, next) {
-  console.error(error.stack)
-  res.status(500).send('Interval server error!')
-})
+// catch-all for 405 "Method Not Allowed" errors
+app.use(fourOhFiveHandler)
 
-const port = process.env.SERVER_PORT;
-app.listen(port, () => {
-  console.log('Server running...', port)
-  // start node schedule
+app.use(globalErrorHandler)
+
+app.listen(process.env.SERVER_PORT, () => {
+  console.log('Server is running.')
+  // schedule init
   scheduleInit()
 });
+
+// Connect to MongoDB
+async function mongoDBConnect() {
+  try {
+    const options = {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    }
+    const res = await mongoose.connect(process.env.MONGO_URI, options)
+    console.log('>>>>>>>>>> MongoDB Connected!', res)
+  } catch (err) {
+    err => console.log('Mongodb error: ', err)
+  }
+}

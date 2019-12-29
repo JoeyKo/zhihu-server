@@ -2,8 +2,12 @@
   "name": "zhihu-server",
   "version": "1.0.0",
   "description": "zhihu server",
-  "main": "server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=8.10.0"
+  },
   "scripts": {
+    "dev": "nodemon server.js",
     "start": "pm2-runtime server.js",
     "migrate": "node_modules/.bin/sequelize db:migrate",
     "migrate:list": "node_modules/.bin/sequelize db:migrate:status",
@@ -17,13 +21,15 @@
   "author": "joey ko",
   "license": "ISC",
   "dependencies": {
+    "@hapi/joi": "^16.1.8",
+    "amqplib": "^0.5.5",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.16.0",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "cron": "^1.7.2",
     "express": "^4.17.1",
-    "express-fileupload": "^1.1.6-alpha.6",
+    "express-fileupload": "^1.1.6",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.27",
@@ -31,6 +37,7 @@
     "mongoose-paginate-v2": "^1.3.3",
     "morgan": "^1.9.1",
     "mysql2": "^2.0.0",
+    "nodemailer": "^6.4.0",
     "redis": "^2.8.0",
     "sequelize": "^5.21.2",
     "sequelize-cli": "^5.5.1",
@@ -38,6 +45,9 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "nodemon": "^1.19.4"
+    "eslint": "^6.7.2",
+    "eslint-plugin-node": "^10.0.0",
+    "nodemon": "^1.19.4",
+    "supertest": "^4.0.2"
   }
 }

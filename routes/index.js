@@ -1,18 +1,13 @@
-const express = require('express')
-const router = express.Router()
-
+const helthCheck = require('./healthCheck')
 const user = require('./user')
 const article = require('./article')
 const store = require('./store')
 const upload = require('./upload')
-const authenticate = require('../middlewares/Authenticate');
 
-const { logger } = require('../helpers')
-
-router.route('/health-check')
-  .get(authenticate, (req, res) => {
-    logger.info('Hello!')
-    res.status(200).json({ msg: 'health check!', serverMode: process.env.NODE_ENV })
-  })
-
-module.exports = [user, upload, article, store, router]
+module.exports = app => {
+  app.use('/api/health-check', helthCheck)
+  app.use('/api/user', user)
+  app.use('/api/article', article)
+  app.use('/api/store', store)
+  app.use('/api/upload', upload)
+}

@@ -5,11 +5,12 @@ class APIError extends Error {
    * @param {Number} status - The HTTP Status Code (e.g. 404)
    * @param {String} title - The title corresponding to the Status Code (e.g. Bad Request)
    * @param {String} message - Specific information about what caused the error
+   * @param {Boolean} isOperational - if you're using some centralized error factory
    */
   constructor(
     status = 500,
     title = 'Internal Server Error',
-    message = 'An unknown server error occurred.'
+    message = 'An unknown server error occurred.',
   ) {
     super(message);
     this.status = status;

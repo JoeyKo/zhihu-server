@@ -1,109 +1,62 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const router = express.Router();
-const cloudinary = require('cloudinary').v2;
-const { redis, redisClient } = require('../db/redis')
-const User = require("../models/user")
-
+const UserCtrl = require('../controllers/UserController');
 const authenticate = require('../middlewares/Authenticate')
+const { requestResponseHandler } = require('../handlers')
+const { successResponse, errorResponse, successResponseWithData } = requestResponseHandler
 
 // regist
 router.route('/regist')
   .post(async (req, res) => {
-    try {
-      const userExist = await User.findOne({ email: req.body.email })
-      if (userExist) {
-        return res.status(200).json({ success: false, msg: `user ${req.body.email} already exists!` })
-      }
-      const newUser = new User({
-        email: req.body.email,
-        password: req.body.password
-      });
-      const userCreated = await newUser.save()
-      const token = generateAndStoreToken(userCreated)
-      res.cookie("token", token, { httpOnly: true })
-      redisClient.set(`${userCreated.id}_${token}`, true, redis.print);
-      res.status(200).json({ msg: `${userCreated.email} regist successfully!` });
-    } catch (err) {
-      console.log(err)
-      res.status(500).json({ msg: err.message })
+    const { email, password } = req.body;
+    const result = await UserCtrl.createUser(email, password);
+    const { status, token, data, msg } = result;
+    if (!status) {
+      return errorResponse(res, msg);
     }
+    res.cookie("token", token, { httpOnly: true });
+    successResponse(res, msg, data);
   });
 
 // login
 router.route('/login')
   .post(async (req, res) => {
-    try {
-      // select('password') => user data with password
-      const userExist = await User.findOne({ email: req.body.email }).select('password')
-      if (!userExist) {
-        return res.status(200).json({ success: false, msg: 'user dosn\'t exist!' })
-      }
-      const isMatched = await userExist.comparePassword(userExist, req.body.password)
-      if (isMatched) {
-        redisClient.scan('0', 'MATCH', `${userExist.id}_*`, (err, results) => {
-          if (!err) results.map(item => redisClient.del(item))
-        })
-        const token = generateAndStoreToken(userExist)
-        res.cookie("token", token, { httpOnly: true })
-        redisClient.set(`${userExist.id}_${token}`, true, redis.print);
-        res.status(200).json({ msg: 'login successfully!' })
-      } else {
-        res.status(200).json({ success: false, msg: 'wrong passwrod!' })
-      }
-    } catch (err) {
-      console.log(err)
-      res.status(500).json({ msg: err.message })
+    const { email, password } = req.body;
+    const result = await UserCtrl.userLogin(email, password);
+    const { status, token, msg } = result;
+    if (!status) {
+      return errorResponse(res, msg);
     }
+    res.cookie("token", token, { httpOnly: true })
+    successResponse(res, msg);
   })
 
 // logout
 router.route('/logout')
   .post(authenticate, async (req, res) => {
     const { uid } = res.locals
-    console.log('redis key: ', `${uid}_${req.cookies.token}`)
-    redisClient.del(`${uid}_${req.cookies.token}`, redis.print)
+    const { token } = req.cookies;
+
+    console.log('redis key: ', `${uid}_${token}`);
+    await UserCtrl.userLogout(uid, token);
     res.clearCookie('token')
-    res.status(200).json({ msg: 'logout successfully!' })
+    successResponse(res, 'logout successfully!')
   })
 
 
 // me 
-router.route('/me')
+router.route('/profile')
   .get(authenticate, async (req, res) => {
-    try {
-      const { uid } = res.locals
-      const profile = await User.findById(uid).select({
-         email: 1,
-         gender: 1
-      })
-      res.status(200).json({ data: profile })
-    } catch (err) {
-      res.status(500).json({ msg: err.message })
-    }
+    const { uid } = res.locals
+    const profile = await UserCtrl.getProfile(uid)
+    successResponseWithData(res, null, { profile })
   })
 
   .put(authenticate, async (req, res) => {
-    try {
-      const { avatar } = req.body
-      // replace tmp tag to avatar
-      await uploader.replace_tag('avatar', [avatar]);
-      // move tmp file to avatar folder
-      const avatarRenamed = await cloudinary.uploader.rename(avatar, `avatar/${avatar}`);
-      // cron run 
-      res.status(200).json({ data: avatarRenamed })
-    } catch (err) {
-      res.status(500).json({ msg: err.message })
-    }
+    const { avatar } = req.body;
+    const updatedProfile = await UserCtrl.updateProfile(avatar);
+    successResponseWithData(res, null, { profile: updatedProfile });
   })
 
-function generateAndStoreToken(user) {
-  return jwt.sign({
-    uid: user.id,
-    role: user.role
-  }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRATION
-  })
-}
 
 module.exports = router;  

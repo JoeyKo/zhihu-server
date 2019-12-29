@@ -12,6 +12,10 @@ cloudinary.config({
   api_secret: 'gz6tA87IgAyKDUB4mxjwKKQsaiY'
 });
 
+const pagination = {
+  limit: 20
+}
+
 module.exports = {
-  APP_NAME: 'zhihu',
+  pagination
 }

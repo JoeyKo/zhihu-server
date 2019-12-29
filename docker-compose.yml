@@ -48,6 +48,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MONGO_URI: ${MONGO_URI}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASS: ${RABBITMQ_PASS}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
     ports:
@@ -57,14 +59,26 @@ services:
       - /app/node_modules
     depends_on:
       - mongo
-    command: bash -c "/usr/wait-for-it.sh --timeout=0 mongo:27017 && npm start"
+    command: bash -c "/usr/wait-for-it.sh --timeout=0 mongo:27017 && 
+            /usr/wait-for-it.sh --timeout=0 rabbitmq:5672 && npm run dev"
     links:
       - mysql
       - mongo
       - redis
+      - rabbitmq
+  rabbitmq: 
+    image: rabbitmq:management
+    command: rabbitmq-server
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_COOKIE: cluster_cookie
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
   redis:
     image: redis:latest
-    ports:
-      - 6379:6379
     command: 
       'redis-server'
+    ports:
+      - 6379:6379
