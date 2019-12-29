@@ -1,2 +1,2 @@
 exports.APIError = require('./APIError');
-exports.logger = require('./logger');
+exports.logger = require('./Logger');
