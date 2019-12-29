@@ -11,7 +11,7 @@ router.route('/article')
     const limit = 20
     const offset = (page ? page - 1 : 0) * limit
     const articles = await ArticleCtrl.listArticles({ limit, offset })
-    successResponseWithData(res, null, { limit, offset, count: articles.count, data: articles.rows })
+    successResponseWithData(res, null, { limit, offset, count: articles.count, articles: articles.rows })
   })
 
   .post(authenticate, async (req, res) => {

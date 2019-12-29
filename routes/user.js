@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const cloudinary = require('cloudinary').v2;
-const User = require("../models/user")
 const UserCtrl = require('../controllers/UserController');
 const authenticate = require('../middlewares/Authenticate')
 const { requestResponseHandler } = require('../handlers')
@@ -23,14 +21,14 @@ router.route('/regist')
 // login
 router.route('/login')
   .post(async (req, res) => {
-      const { email, password } = req.body;
-      const result = await UserCtrl.userLogin(email, password);
-      const { status, token, msg } = result;
-      if (!status) {
-        return errorResponse(res, msg);
-      }
-      res.cookie("token", token, { httpOnly: true })
-      successResponse(res, msg);
+    const { email, password } = req.body;
+    const result = await UserCtrl.userLogin(email, password);
+    const { status, token, msg } = result;
+    if (!status) {
+      return errorResponse(res, msg);
+    }
+    res.cookie("token", token, { httpOnly: true })
+    successResponse(res, msg);
   })
 
 // logout
@@ -47,24 +45,17 @@ router.route('/logout')
 
 
 // me 
-router.route('/me')
+router.route('/profile')
   .get(authenticate, async (req, res) => {
     const { uid } = res.locals
-    const profile = await User.findById(uid).select({
-      email: 1,
-      gender: 1
-    })
-    successResponseWithData(res, null, { data: profile })
+    const profile = await UserCtrl.getProfile(uid)
+    successResponseWithData(res, null, { profile })
   })
 
   .put(authenticate, async (req, res) => {
-    const { avatar } = req.body
-    // replace tmp tag to avatar
-    await cloudinary.uploader.replace_tag('avatar', [avatar]);
-    // move tmp file to avatar folder
-    const avatarRenamed = await cloudinary.uploader.rename(avatar, `avatar/${avatar}`);
-    // cron run 
-    successResponseWithData(res, null, { data: avatarRenamed })
+    const { avatar } = req.body;
+    const updatedProfile = await UserCtrl.updateProfile(avatar);
+    successResponseWithData(res, null, { profile: updatedProfile });
   })
 
 

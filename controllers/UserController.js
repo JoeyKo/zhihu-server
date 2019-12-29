@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user')
 const { redis, redisClient } = require('../db/redis')
+const cloudinary = require('cloudinary').v2;
 
 class UserController {
   constructor() {
@@ -42,6 +43,20 @@ class UserController {
 
   static async userLogout(uid, token) {
     redisClient.del(`${uid}_${token}`, redis.print)
+  }
+
+  static async getProfile(uid) {
+    return await User.findById(uid).select({
+      email: 1,
+      gender: 1
+    })
+  }
+
+  static async updateProfile(avatar) {
+     // replace tmp tag to avatar
+     await cloudinary.uploader.replace_tag('avatar', [avatar]);
+     // move tmp file to avatar folder
+     return await cloudinary.uploader.rename(avatar, `avatar/${avatar}`);
   }
 }
 
