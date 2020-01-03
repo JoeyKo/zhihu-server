@@ -6,12 +6,12 @@ const cors = require('cors')
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const fileUpload = require('express-fileupload');
-const { scheduleInit } = require('./scripts/clean_tmp_files')
+// const { scheduleInit } = require('./scripts/clean_tmp_files')
 
 // config
 require('./config')
 
-mongoDBConnect()
+// mongoDBConnect()
 
 const { errorHandler } = require('./handlers');
 const {
@@ -62,8 +62,8 @@ app.use(globalErrorHandler)
 
 app.listen(process.env.SERVER_PORT, () => {
   console.log('Server is running.')
-  // schedule init
-  scheduleInit()
+  // // schedule init
+  // scheduleInit()
 });
 
 // Connect to MongoDB
@@ -73,8 +73,8 @@ async function mongoDBConnect() {
       useNewUrlParser: true,
       useUnifiedTopology: true
     }
-    const res = await mongoose.connect(process.env.MONGO_URI, options)
-    console.log('>>>>>>>>>> MongoDB Connected!', res)
+    await mongoose.connect(process.env.MONGO_URI, options)
+    console.log('>>>>>>>>>> MongoDB Connected!')
   } catch (err) {
     err => console.log('Mongodb error: ', err)
   }

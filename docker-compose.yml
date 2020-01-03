@@ -28,12 +28,13 @@ services:
     ports:
       - 27017:27017
     restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     volumes:
       - ./data/mongodb:/data/db
-    # environment:
-    #   MONGO_INITDB_DATABASE: zhihu
-    #   MONGO_INITDB_ROOT_USERNAME: root
-    #   MONGO_INITDB_ROOT_PASSWORD: root
+      # - ./db/mongo-entrypoint/:/docker-entrypoint-initdb.d/
+    command: mongod
   app:
     restart: always
     build:
