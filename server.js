@@ -11,7 +11,7 @@ const fileUpload = require('express-fileupload');
 // config
 require('./config')
 
-// mongoDBConnect()
+mongoDBConnect()
 
 const { errorHandler } = require('./handlers');
 const {
