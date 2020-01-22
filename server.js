@@ -21,7 +21,7 @@ const {
   fourOhFiveHandler
 } = errorHandler
 
-//swagger
+// swagger
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/swagger.json');
 
@@ -64,6 +64,10 @@ app.listen(process.env.SERVER_PORT, () => {
   console.log('Server is running.')
   // // schedule init
   // scheduleInit()
+});
+
+app.on('error', (e) => {
+  console.log('Server error: ', e)
 });
 
 // Connect to MongoDB

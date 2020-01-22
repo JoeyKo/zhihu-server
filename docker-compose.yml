@@ -24,17 +24,31 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
   mongo:
-    build:
-      context: .
-      dockerfile: ./docker/mongo/Dockerfile
+    image: mongo
     ports:
       - 27017:27017
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      AUTH: 'yes'
+      # MONGODB_ADMIN_USER: root
+      # MONGODB_ADMIN_PASS: root
+      MONGODB_APPLICATION_DATABASE: zhihu
+      MONGODB_APPLICATION_USER: restapiuser
+      MONGODB_APPLICATION_PASS: r3sT4pIp4ssw0rd
+      MONGO_DATA_DIR: /data/db
+      MONGO_LOG_DIR: /var/log/mongodb.log
+      MONGO_LOG_LEVEL: 2
     volumes:
       - ./data/mongodb:/data/db
+      - ./mongodb_run.sh:/mongodb_run.sh
+      - ./set_mongodb_password.sh:/set_mongodb_password.sh
+    # command:
+    #   - /bin/sh
+    #   - -c
+    #   - |
+    #     chmod +x /mongodb_run.sh
+    #     chmod +x /set_mongodb_password.sh
+    #     ./mongodb_run.sh
   app:
     restart: always
     build:
@@ -58,9 +72,7 @@ services:
     volumes:
       - ./:/app
       - /app/node_modules
-    depends_on:
-      - mongo
-    command: bash -c "/usr/wait-for-it.sh --timeout=0 mongo:27017 && 
+    command: bash -c "/usr/wait-for-it.sh --timeout=0 mongo:27017 &&
             /usr/wait-for-it.sh --timeout=0 rabbitmq:5672 && npm run start"
     links:
       - mysql
