@@ -8,14 +8,20 @@ const { successResponse, errorResponse, successResponseWithData } = requestRespo
 // regist
 router.route('/regist')
   .post(async (req, res) => {
-    const { email, password } = req.body;
-    const result = await UserCtrl.createUser(email, password);
-    const { status, token, data, msg } = result;
-    if (!status) {
-      return errorResponse(res, msg);
+    try {
+      const { email, password } = req.body;
+      const result = await UserCtrl.createUser(email, password);
+      const { status, token, msg } = result;
+      if (!status) {
+        return errorResponse(res, msg);
+      }
+      res.cookie("token", token, { httpOnly: true });
+      successResponse(res, msg);
+    } catch (err) {
+      if (err.name === 'ValidationError') {
+        errorResponse(res, err.message)
+      }
     }
-    res.cookie("token", token, { httpOnly: true });
-    successResponse(res, msg, data);
   });
 
 // login
@@ -27,7 +33,7 @@ router.route('/login')
     if (!status) {
       return errorResponse(res, msg);
     }
-    res.cookie("token", token, { httpOnly: true })
+    res.cookie("token", token, { httpOnly: true  })
     successResponse(res, msg);
   })
 

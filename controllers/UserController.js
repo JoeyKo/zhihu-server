@@ -18,7 +18,7 @@ class UserController {
     const token = generateAndStoreToken(userCreated)
     redisClient.set(`${userCreated.id}_${token}`, true, redis.print);
 
-    return { status: 1, token, data: userCreated }
+    return { status: 1, msg: 'User create successfully!', token, data: userCreated }
   }
 
   static async userLogin(email, password) {
@@ -35,7 +35,7 @@ class UserController {
       const token = generateAndStoreToken(userExist)
       redisClient.set(`${userExist.id}_${token}`, true, redis.print);
 
-      return { status: 1, token }
+      return { status: 1, token, msg: 'login successfully!' }
     } else {
       return { status: 0, msg: 'wrong passwrod!' };
     }
