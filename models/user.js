@@ -24,6 +24,9 @@ const userSchema = new Schema({
   headline: {
     type: String,
   },
+  birthday: {
+    type: Date,
+  },
   gender: {
     type: Number,
     enum: [0, 1], // 0 is female, 1 is male

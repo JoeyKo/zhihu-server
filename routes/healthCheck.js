@@ -6,7 +6,7 @@ const { logger } = require('../helpers')
 
 router.route('/')
   .get(authenticate, (req, res) => {
-    logger.info('Hello!')
+    logger.info('Health check log!!!')
     res.status(200).json({ msg: 'health check!', serverMode: process.env.NODE_ENV })
   })
 

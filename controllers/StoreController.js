@@ -5,15 +5,15 @@ class StoreController {
   }
 
   static async listStores(name, select, populate) {
-    return await await Store.paginate(name || '', {
+    return await Store.paginate(name || '', {
       select: select || { location: 1, user: 1 },
       populate: populate || { path: 'user' }
     })
   }
 
   static async createStore(params) {
-    const newItem = new Store(params)
-    return await newItem.save()
+    const newStore = new Store(params)
+    return await newStore.save()
   }
 }
 

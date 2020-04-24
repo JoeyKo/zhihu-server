@@ -27,14 +27,19 @@ router.route('/regist')
 // login
 router.route('/login')
   .post(async (req, res) => {
-    const { email, password } = req.body;
-    const result = await UserCtrl.userLogin(email, password);
-    const { status, token, msg } = result;
-    if (!status) {
-      return errorResponse(res, msg);
+    try {
+      const { email, password } = req.body;
+      const result = await UserCtrl.userLogin(email, password);
+      const { status, token, msg } = result;
+      if (!status) {
+        return errorResponse(res, msg);
+      }
+      res.cookie("token", token, { httpOnly: false })
+      successResponse(res, msg);
+    } catch (err) {
+      errorResponse(res, err.message)
     }
-    res.cookie("token", token, { httpOnly: true  })
-    successResponse(res, msg);
+    
   })
 
 // logout
