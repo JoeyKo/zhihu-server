@@ -5,10 +5,8 @@ class QuestionController {
 
     }
 
-    static async listQuestions(name, select) {
-        return await Question.paginate(name || '', {
-            select: select || { title: 1 },
-        })
+    static async listQuestions(name) {
+        return await Question.paginate(name)
     }
 
     static async createQuestion(params) {

@@ -7,27 +7,26 @@ const { successResponseWithData } = requestResponseHandler
 router.route('/')
 	.get(async (req, res) => {
 		const results = await QuestionCtrl.listQuestions()
-		successResponseWithData(res, null, { questions: results })
+		successResponseWithData(res, null, results)
 	})
 
 	.post(async (req, res) => {
-		const { title } = req.body;
-		const result = await QuestionCtrl.createQuestion({ title })
-		successResponseWithData(res, null, { question: result })
+		const result = await QuestionCtrl.createQuestion(req.body)
+		successResponseWithData(res, null, result)
 	})
 
 router.route('/:id')
 	.get(async (req, res) => {
 		const { id } = req.params
 		const results = await QuestionCtrl.getQuestion(id)
-		successResponseWithData(res, null, { questions: results })
+		successResponseWithData(res, null, results)
 	})
 
 router.route('/:id/similar-questions')
 	.get(async (req, res) => {
 		const { id } = req.params
 		const results = await QuestionCtrl.getSimilarQuestions(id)
-		successResponseWithData(res, null, { questions: results })
+		successResponseWithData(res, null, results)
 	})
 
 module.exports = router

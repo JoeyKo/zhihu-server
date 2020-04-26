@@ -8,7 +8,7 @@
   "basePath": "/api",
   "produces": ["application/json"],
   "paths": {
-    "/login": {
+    "/user/login": {
       "post": {
         "tags": ["/user"],
         "parameters": [

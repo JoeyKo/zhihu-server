@@ -10,6 +10,6 @@ module.exports = app => {
   app.use('/api/user', user)
   app.use('/api/article', article)
   app.use('/api/store', store)
-  app.use('/api/upload', upload)
+  app.use('/api/file', upload)
   app.use('/api/question', question)
 }

@@ -46,17 +46,16 @@ class UserController {
   }
 
   static async getProfile(uid) {
-    return await User.findById(uid).select({
-      email: 1,
-      gender: 1
-    })
+    return await User.findById(uid)
   }
 
-  static async updateProfile(avatar) {
-     // replace tmp tag to avatar
-     await cloudinary.uploader.replace_tag('avatar', [avatar]);
-     // move tmp file to avatar folder
-     return await cloudinary.uploader.rename(avatar, `avatar/${avatar}`);
+  static async updateProfile(id, user) {
+    //  // replace tmp tag to avatar
+    //  await cloudinary.uploader.replace_tag('avatar', [avatar]);
+    //  // move tmp file to avatar folder
+    //  return await cloudinary.uploader.rename(avatar, `avatar/${avatar}`);
+    console.log(id, user)
+    return await User.updateOne({ _id: id }, { $set: user }, { runValidators: true })
   }
 }
 

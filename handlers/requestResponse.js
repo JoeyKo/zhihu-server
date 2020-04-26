@@ -21,4 +21,3 @@ module.exports.errorResponse = function (res, msg) {
 		message: msg,
 	})
 };
-

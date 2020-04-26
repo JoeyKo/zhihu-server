@@ -8,16 +8,19 @@ const questionSchema = new Schema({
         required: true,
     },
     content: {
-        stype: String,
+        type: String,
     },
     answerCount: {
         type: Number,
+        default: 0,
     },
     followerCount: {
         type: Number,
+        default: 0,
     },
     commentCount: {
-        type: Number
+        type: Number,
+        default: 0,
     },
 });
 

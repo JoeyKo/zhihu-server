@@ -39,7 +39,6 @@ router.route('/login')
     } catch (err) {
       errorResponse(res, err.message)
     }
-    
   })
 
 // logout
@@ -48,14 +47,13 @@ router.route('/logout')
     const { uid } = res.locals
     const { token } = req.cookies;
 
-    console.log('redis key: ', `${uid}_${token}`);
     await UserCtrl.userLogout(uid, token);
     res.clearCookie('token')
     successResponse(res, 'logout successfully!')
   })
 
 
-// me 
+// profile 
 router.route('/profile')
   .get(authenticate, async (req, res) => {
     const { uid } = res.locals
@@ -64,10 +62,13 @@ router.route('/profile')
   })
 
   .put(authenticate, async (req, res) => {
-    const { avatar } = req.body;
-    const updatedProfile = await UserCtrl.updateProfile(avatar);
-    successResponseWithData(res, null, { profile: updatedProfile });
+    try {
+      const { uid } = res.locals
+      await UserCtrl.updateProfile(uid, req.body);
+      successResponse(res, 'profile update successfully!');
+    } catch (err) {
+      errorResponse(res, err.message)
+    }
   })
-
 
 module.exports = router;  
