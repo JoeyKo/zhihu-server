@@ -14,11 +14,10 @@ module.exports.successResponseWithData = function (res, msg, data) {
 	});
 };
 
-// apiResponse.errorResponse(res, "Operation success");
+// apiResponse.errorResponse(res, "Operation invalid");
 module.exports.errorResponse = function (res, msg) {
 	return res.status(200).json({
 		status: 0,
 		message: msg,
 	})
 };
-

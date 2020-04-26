@@ -9,7 +9,6 @@ const JWTAuth = function (req, res, next) {
     jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
       if (err) {
         return res.status(401).json({
-          success: false,
           msg: 'Sign in to continue.'
         });
       }

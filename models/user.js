@@ -19,21 +19,36 @@ const userSchema = new Schema({
   },
   username: {
     type: String,
+    minlength: [1, "Username is too short"],
+    maxlength: [10, "Username is too long"],
     trim: true
-  },
-  headline: {
-    type: String,
   },
   gender: {
     type: Number,
     enum: [0, 1], // 0 is female, 1 is male
     default: 1,
   },
+  birthday: {
+    type: Date,
+  },
+  headline: {
+    type: String,
+    minlength: [6, "Headline is too short"],
+    maxlength: [50, "Username is too long"],
+  },
   avatar_url: {
     type: Schema.Types.ObjectId,
     ref: 'File'
+  },
+  following: {
+    type: Number,
+    default: 0,
+  },
+  follower: {
+    type: Number,
+    default: 0,
   }
-},{ timestamps: true });
+}, { timestamps: true });
 
 userSchema.pre('save', async function(next) {
   try {
@@ -46,6 +61,10 @@ userSchema.pre('save', async function(next) {
   }
 })
 
+userSchema.path('gender').validate(function (value) {
+  return [0, 1].indexOf(value) !== -1;
+}, 'Invalid gender')
+
 userSchema.methods.comparePassword = function(user, candidatePassword) {
   return bcrypt.compare(candidatePassword, user.password);
 }
@@ -53,6 +72,6 @@ userSchema.methods.comparePassword = function(user, candidatePassword) {
 function validateEmail(email) {
   const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   return re.test(email)
-};
+}
 
 module.exports = User = mongoose.model('User', userSchema);

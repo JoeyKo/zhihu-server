@@ -18,7 +18,7 @@ class UserController {
     const token = generateAndStoreToken(userCreated)
     redisClient.set(`${userCreated.id}_${token}`, true, redis.print);
 
-    return { status: 1, token, data: userCreated }
+    return { status: 1, msg: 'User create successfully!', token, data: userCreated }
   }
 
   static async userLogin(email, password) {
@@ -35,7 +35,7 @@ class UserController {
       const token = generateAndStoreToken(userExist)
       redisClient.set(`${userExist.id}_${token}`, true, redis.print);
 
-      return { status: 1, token }
+      return { status: 1, token, msg: 'login successfully!' }
     } else {
       return { status: 0, msg: 'wrong passwrod!' };
     }
@@ -46,17 +46,16 @@ class UserController {
   }
 
   static async getProfile(uid) {
-    return await User.findById(uid).select({
-      email: 1,
-      gender: 1
-    })
+    return await User.findById(uid)
   }
 
-  static async updateProfile(avatar) {
-     // replace tmp tag to avatar
-     await cloudinary.uploader.replace_tag('avatar', [avatar]);
-     // move tmp file to avatar folder
-     return await cloudinary.uploader.rename(avatar, `avatar/${avatar}`);
+  static async updateProfile(id, user) {
+    //  // replace tmp tag to avatar
+    //  await cloudinary.uploader.replace_tag('avatar', [avatar]);
+    //  // move tmp file to avatar folder
+    //  return await cloudinary.uploader.rename(avatar, `avatar/${avatar}`);
+    console.log(id, user)
+    return await User.updateOne({ _id: id }, { $set: user }, { runValidators: true })
   }
 }
 

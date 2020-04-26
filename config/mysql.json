@@ -4,6 +4,7 @@
     "password": "root",
     "database": "zhihu",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "timezone": "+08:00"
   }
 }
