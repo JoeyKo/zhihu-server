@@ -14,6 +14,10 @@ class QuestionController {
         return await newQuestion.save()
     }
 
+    static async updateQuestion(id, params) {
+        return await Question.updateOne({ _id: id }, { $set: params }, { $runValidators: true })
+    }
+
     static async getQuestion(id) {
         return await Question.findById(id)
     }

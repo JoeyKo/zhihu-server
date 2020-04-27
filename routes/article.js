@@ -5,7 +5,7 @@ const ArticleCtrl = require('../controllers/ArticleController')
 const { requestResponseHandler } = require('../handlers')
 const { successResponseWithData } = requestResponseHandler
 
-router.route('/article')
+router.route('/')
   .get(async (req, res) => {
     const { page } = req.query
     const limit = 20
@@ -15,8 +15,8 @@ router.route('/article')
   })
 
   .post(authenticate, async (req, res) => {
-    const { title, description } = req.body
-    successResponseWithData(res, null, { title, description })
+    const result = await ArticleCtrl.createArticle(req.body)
+    successResponseWithData(res, null, result)
   })
 
 module.exports = router

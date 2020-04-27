@@ -22,6 +22,12 @@ router.route('/:id')
 		successResponseWithData(res, null, results)
 	})
 
+	.put(async (req, res) => {
+		const { id } = req.params
+		const result = await QuestionCtrl.updateQuestion(id, req.body)
+		successResponseWithData(res, null, result)
+	})
+
 router.route('/:id/similar-questions')
 	.get(async (req, res) => {
 		const { id } = req.params
