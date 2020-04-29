@@ -6,7 +6,6 @@ const { successResponse, errorResponse } = requestResponseHandler
 
 router.route('/upload')
   .post(async (req, res) => {
-
     if (!req.files || Object.keys(req.files).length === 0) {
       return errorResponse(res, 'No files were uploaded');
     }

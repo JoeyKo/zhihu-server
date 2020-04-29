@@ -16,6 +16,15 @@ class ArticleController {
   static async createArticle(data) {
     return await Article(sequelize, DataTypes).create(data)
   }
+
+  static async getArticle(id) {
+    return await Article(sequelize, DataTypes).findOne({ where: { id } })
+  }
+
+  static async updateArticle(id, data) {
+    const article = await Article(sequelize, DataTypes).findOne({ where: { id } })
+    return await article.update(data)
+  }
 }
 
 module.exports = ArticleController
