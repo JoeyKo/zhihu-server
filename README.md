@@ -10,7 +10,3 @@ Docker + PM2 + Nginx + Express.js + MongoDB + MySQL + Redis
 - login + regist (JWT)
 - mongoose pagination
 - mysql pagination + mysql migrate
-
-### TODO
-- replace mysql2 with mysql
-- replace mongoose with mongo?
