@@ -1,17 +1,24 @@
 'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const Article = sequelize.define('Article', {
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    description: {
-      type: DataTypes.STRING,
-      allowNull: false
-    }
-  }, {});
-  Article.associate = function(models) {
-    // associations can be defined here
-  };
-  return Article;
-};
+const Sequelize = require('sequelize');
+const { sequelize } = require('../db/mysql')
+
+const Model = Sequelize.Model;
+
+class Article extends Model {}
+Article.init({
+  // attributes
+  title: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  description: {
+    type: Sequelize.STRING
+    // allowNull defaults to true
+  }
+}, {
+  sequelize,
+  modelName: 'Article'
+  // options
+});
+
+module.exports = Article

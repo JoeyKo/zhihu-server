@@ -15,6 +15,15 @@ class StoreController {
     const newStore = new Store(params)
     return await newStore.save()
   }
+
+  static async updateStore(id, params) {
+    return await Store.updateOne({ _id: id }, { $set: params }, { $runValidators: true })
+  }
+
+  static async getStore(id) {
+    return await Store.findById(id)
+  }
+
 }
 
 module.exports = StoreController

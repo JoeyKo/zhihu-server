@@ -10,7 +10,7 @@ module.exports.successResponseWithData = function (res, msg, data) {
 	return res.status(200).json({
 		status: 1,
 		message: msg,
-		data: data
+		...data
 	});
 };
 
