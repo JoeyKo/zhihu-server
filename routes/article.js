@@ -23,7 +23,7 @@ router.route('/')
       const orderType = sortArr[1] || 'DESC'
 
       const articles = await ArticleCtrl.listArticles({ limit, offset, order: [[order, orderType]] })
-      successResponseWithData(res, null, { pageSize, current, count: articles.count, data: articles.rows })
+      successResponseWithData(res, null, { pageSize: limit, current: current || 1, count: articles.count, data: articles.rows })
     } catch (err) {
       logger.error(`GET /api/article ${err.message}`)
       errorResponse(res, err.message)
@@ -62,10 +62,20 @@ router.route('/:id')
     }
   })
 
+  .delete(authenticate, async (req, res) => {
+    try {
+      const { id } = req.params
+      await ArticleCtrl.delArticle(id, req.body)
+      successResponse(res, null)
+    } catch (err) {
+      errorResponse(res, err.message)
+    }
+  })
+
 module.exports = router
 
 const schema = Joi.object({
-  pageSize: Joi.number().optional(),
-  current: Joi.number().optional(),
-  sorter: Joi.string().optional(),
+  pageSize: Joi.number().optional().empty(''),
+  current: Joi.number().optional().empty(''),
+  sorter: Joi.string().optional().empty(''),
 })

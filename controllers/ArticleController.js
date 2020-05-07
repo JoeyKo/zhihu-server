@@ -24,6 +24,11 @@ class ArticleController {
     const article = await Article.findOne({ where: { id } })
     return await article.update(data)
   }
+
+  static async delArticle(id) {
+    const article = await Article.findOne({ where: { id } })
+    await article.destroy()
+  }
 }
 
 module.exports = ArticleController
