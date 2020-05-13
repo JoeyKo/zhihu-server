@@ -46,7 +46,10 @@ router.route('/:id')
     try {
       const { id } = req.params
       const result = await ArticleCtrl.getArticle(id)
-      successResponseWithData(res, null, result)
+      if (result.err) {
+        return errorResponse(res, result.err)
+      }
+      successResponseWithData(res, null, { article: result })
     } catch (err) {
       errorResponse(res, err.message)
     }

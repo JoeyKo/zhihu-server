@@ -17,7 +17,11 @@ class ArticleController {
   }
 
   static async getArticle(id) {
-    return await Article.findOne({ where: { id } })
+    const findedOne = await Article.findOne({ where: { id } })
+    if (findedOne === null) {
+      return { err: 'Not found!' }
+    }
+    return findedOne.get({ plain: true })
   }
 
   static async updateArticle(id, data) {
