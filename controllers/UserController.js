@@ -1,19 +1,18 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user')
 const { redis, redisClient } = require('../db/redis')
-const cloudinary = require('cloudinary').v2;
 
 class UserController {
   constructor() {
   }
 
-  static async createUser(email, password) {
+  static async createUser(email, password, role) {
     const userExist = await User.findOne({ email })
     if (userExist) {
       return { status: 0, msg: `user ${email} already exists!` };
     }
 
-    const newUser = new User({ email, password });
+    const newUser = new User({ email, password, role });
     const userCreated = await newUser.save();
     const token = generateAndStoreToken(userCreated)
     redisClient.set(`${userCreated.id}_${token}`, true, redis.print);
@@ -22,20 +21,21 @@ class UserController {
   }
 
   static async userLogin(email, password) {
-    // select('password') => user data with password
-    const userExist = await User.findOne({ email }).select('password')
-    if (!userExist) {
+    const userOnlyPwd = await User.findOne({ email }).select('password')
+    console.log(userOnlyPwd)
+    if (!userOnlyPwd) {
       return { status: 0, msg: 'user not exist!' };
     }
-    const isMatched = await userExist.comparePassword(userExist, password)
+    const isMatched = await userOnlyPwd.comparePassword(userOnlyPwd, password)
     if (isMatched) {
-      redisClient.scan('0', 'MATCH', `${userExist.id}_*`, (err, results) => {
+      redisClient.scan('0', 'MATCH', `${userOnlyPwd.id}_*`, (err, results) => {
         if (!err) results.map(item => redisClient.del(item))
       })
-      const token = generateAndStoreToken(userExist)
-      redisClient.set(`${userExist.id}_${token}`, true, redis.print);
+      const token = generateAndStoreToken(userOnlyPwd)
+      redisClient.set(`${userOnlyPwd.id}_${token}`, true, redis.print);
 
-      return { status: 1, token, msg: 'login successfully!' }
+      const userProfile = await User.findById(userOnlyPwd.id)
+      return { status: 1, token, data: userProfile, msg: 'login successfully!' }
     } else {
       return { status: 0, msg: 'wrong passwrod!' };
     }

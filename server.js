@@ -26,7 +26,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/swagger.json');
 
 // cors middleware
-app.use(cors())
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }))
 
 // urlencoded payloads
 app.use(express.urlencoded({ extended: true }))

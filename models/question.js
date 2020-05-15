@@ -22,8 +22,11 @@ const questionSchema = new Schema({
         type: Number,
         default: 0,
     },
+    tags: {
+        type: Array,
+    }
 });
 
 questionSchema.plugin(mongoosePaginate);
 
-module.exports = Question = mongoose.model('question', questionSchema)
+module.exports = mongoose.model('question', questionSchema)

@@ -27,7 +27,7 @@ function fourOhFiveHandler(request, response, next) {
   );
 }
 
-function globalErrorHandler(error, request, response, next) {
+function globalErrorHandler(error, request, response) {
   let err = error;
   if (!(error instanceof APIError)) {
     err = new APIError(500, error.type, error.message);

@@ -36,6 +36,11 @@ const userSchema = new Schema({
     minlength: [6, "Headline is too short"],
     maxlength: [50, "Username is too long"],
   },
+  role: {
+    type: String,
+    enum: ['admin', 'guest'],
+    default: 'guest'
+  },
   avatar_url: {
     type: Schema.Types.ObjectId,
     ref: 'File'
@@ -74,4 +79,4 @@ function validateEmail(email) {
   return re.test(email)
 }
 
-module.exports = User = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema);

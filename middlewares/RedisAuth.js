@@ -7,15 +7,15 @@ const JWTAuth = async function (req, res, next) {
     const isTokenValid = await redisClient.get(`${uid}_${token}`)
     if (!isTokenValid) {
       return res.status(401).json({
-        success: false,
-        msg: 'Sign in to continue.'
+        status: 0,
+        message: 'Sign in to continue.',
       });
     }
     next()
   } catch (err) {
     res.status(401).json({
-      success: false,
-      msg: 'Sign in to continue.'
+      status: 0,
+      message: 'Sign in to continue.',
     });
   }
 } 

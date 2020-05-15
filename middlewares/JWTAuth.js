@@ -9,7 +9,8 @@ const JWTAuth = function (req, res, next) {
     jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
       if (err) {
         return res.status(401).json({
-          msg: 'Sign in to continue.'
+          status: 0,
+          message: 'Sign in to continue.',
         });
       }
       // if everything is good, save to request for use in other routes
@@ -21,8 +22,8 @@ const JWTAuth = function (req, res, next) {
     // if there is no token
     // return an error
     res.status(401).json({
-      success: false,
-      msg: 'Sign in to continue.'
+      status: 0,
+      message: 'Sign in to continue.',
     });
   }
 }
