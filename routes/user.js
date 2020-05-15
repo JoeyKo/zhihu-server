@@ -9,14 +9,14 @@ const { successResponse, errorResponse, successResponseWithData } = requestRespo
 router.route('/regist')
   .post(async (req, res) => {
     try {
-      const { email, password } = req.body;
-      const result = await UserCtrl.createUser(email, password);
-      const { status, token, msg } = result;
+      const { email, password, role } = req.body;
+      const result = await UserCtrl.createUser(email, password, role);
+      const { status, token, data, msg } = result;
       if (!status) {
         return errorResponse(res, msg);
       }
       res.cookie("token", token, { httpOnly: true });
-      successResponse(res, msg);
+      successResponseWithData(res, msg, { profile: data });
     } catch (err) {
       if (err.name === 'ValidationError') {
         errorResponse(res, err.message)
@@ -30,12 +30,12 @@ router.route('/login')
     try {
       const { email, password } = req.body;
       const result = await UserCtrl.userLogin(email, password);
-      const { status, token, msg } = result;
+      const { status, token, data, msg } = result;
       if (!status) {
         return errorResponse(res, msg);
       }
       res.cookie("token", token, { httpOnly: false })
-      successResponse(res, msg);
+      successResponseWithData(res, msg, { profile: data });
     } catch (err) {
       errorResponse(res, err.message)
     }

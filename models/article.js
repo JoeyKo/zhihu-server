@@ -14,6 +14,12 @@ Article.init({
   description: {
     type: Sequelize.STRING
     // allowNull defaults to true
+  },
+  rawContent: {
+    type: Sequelize.TEXT
+  },
+  htmlContent: {
+    type: Sequelize.TEXT
   }
 }, {
   sequelize,
