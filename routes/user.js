@@ -15,8 +15,7 @@ router.route('/regist')
       if (!status) {
         return errorResponse(res, msg);
       }
-      res.cookie("token", token, { httpOnly: true });
-      successResponseWithData(res, msg, { profile: data });
+      successResponseWithData(res, msg, { profile: data, token });
     } catch (err) {
       if (err.name === 'ValidationError') {
         errorResponse(res, err.message)
@@ -34,8 +33,7 @@ router.route('/login')
       if (!status) {
         return errorResponse(res, msg);
       }
-      res.cookie("token", token, { httpOnly: false })
-      successResponseWithData(res, msg, { profile: data });
+      successResponseWithData(res, msg, { profile: data, token });
     } catch (err) {
       errorResponse(res, err.message)
     }
@@ -45,10 +43,9 @@ router.route('/login')
 router.route('/logout')
   .post(authenticate, async (req, res) => {
     const { uid } = res.locals
-    const { token } = req.cookies;
+    const token = req.headers.authorization;
 
     await UserCtrl.userLogout(uid, token);
-    res.clearCookie('token')
     successResponse(res, 'logout successfully!')
   })
 

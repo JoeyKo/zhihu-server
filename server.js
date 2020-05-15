@@ -4,7 +4,6 @@ const mongoose = require('mongoose')
 const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
-const cookieParser = require('cookie-parser')
 const fileUpload = require('express-fileupload');
 // const { scheduleInit } = require('./scripts/clean_tmp_files')
 
@@ -39,9 +38,6 @@ app.use(bodyParserHandler)
 
 // log middleware
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
-
-// cookie parser middleware
-app.use(cookieParser())
 
 // fileupload middleware
 app.use(fileUpload());

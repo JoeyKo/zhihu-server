@@ -2,7 +2,7 @@ const { redisClient } = require('../db/redis')
 
 const JWTAuth = async function (req, res, next) {
   try {
-    const token = req.cookies.token
+    const token = req.headers.authorization
     const { uid } = res.locals
     const isTokenValid = await redisClient.get(`${uid}_${token}`)
     if (!isTokenValid) {
