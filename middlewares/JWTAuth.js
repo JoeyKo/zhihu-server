@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const JWTAuth = function (req, res, next) {
   // check header or url parameters or post parameters for token
-  const token = req.cookies.token;
+  const token = req.headers.authorization;
   // decode token
   if (token) {
     // verifies secret and checks exp
