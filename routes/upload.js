@@ -12,13 +12,7 @@ router.route('/upload')
     const { type } = req.query
     console.log(type)
     if (type === 'image') {
-      const { width, height } = req.query
-      const result = await UploadCtrl.uploadImages(req.files, { width, height })
-      const { status, data } = result;
-      if (status === 0) {
-        return errorResponse(res, 'images upload failed!')
-      }
-      return successResponse(res, null, { files: [data] })
+      
     }
   })
 

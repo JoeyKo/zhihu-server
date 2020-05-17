@@ -47,6 +47,8 @@ app.use(express.static('uploads'));
 // fileupload middleware
 app.use(fileUpload({
   createParentPath: true,
+  useTempFiles : true,
+  tempFileDir : '/tmp/',
   limits: { fileSize: 2 * 1024 * 1024 },
   limitHandler: (req, res) => {
     return errorResponse(res, '上传文件不能超过2M')

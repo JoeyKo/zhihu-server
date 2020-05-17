@@ -1,6 +1,10 @@
+const fs = require('fs')
 const jwt = require('jsonwebtoken');
 const User = require('../models/user')
+const File = require('../models/file')
 const { redis, redisClient } = require('../db/redis')
+
+const UPLOAD_AVATAR_DIR = 'uploads/avatar/'
 
 class UserController {
   constructor() {
@@ -22,7 +26,6 @@ class UserController {
 
   static async userLogin(email, password) {
     const userOnlyPwd = await User.findOne({ email }).select('password')
-    console.log(userOnlyPwd)
     if (!userOnlyPwd) {
       return { status: 0, msg: 'user not exist!' };
     }
@@ -46,16 +49,28 @@ class UserController {
   }
 
   static async getProfile(uid) {
-    return await User.findById(uid)
+    return await User.findById(uid).populate('avatar')
   }
 
   static async updateProfile(id, user) {
-    //  // replace tmp tag to avatar
-    //  await cloudinary.uploader.replace_tag('avatar', [avatar]);
-    //  // move tmp file to avatar folder
-    //  return await cloudinary.uploader.rename(avatar, `avatar/${avatar}`);
-    console.log(id, user)
     return await User.updateOne({ _id: id }, { $set: user }, { runValidators: true })
+  }
+
+  static async updateAvatar(id, avatar) {
+    const path = `${UPLOAD_AVATAR_DIR + id}.jpg`
+    if (fs.existsSync(path)) {
+      fs.unlinkSync(path)
+    }
+    avatar.mv(path);
+    const newFile = await new File({ 
+      name: avatar.name, 
+      type: 'image', 
+      format: avatar.mimetype, 
+      size: avatar.size, 
+      path: path.replace('uploads', '')
+    }).save();
+
+    await this.updateProfile(id, { avatar: newFile.id })
   }
 }
 
