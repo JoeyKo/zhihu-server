@@ -68,4 +68,21 @@ router.route('/profile')
     }
   })
 
+router.post('/upload-avatar', async (req, res) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return errorResponse(res, 'No files were uploaded');
+  } else {
+    const avatar = req.files.avatar;
+    avatar.mv('uploads/avatar/' + avatar.name);
+
+    successResponseWithData(res, 'File is uploaded', {
+      avatar: {
+        name: avatar.name,
+        mimetype: avatar.mimetype,
+        size: avatar.size
+      }
+    })
+  }
+});
+
 module.exports = router;  

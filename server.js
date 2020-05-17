@@ -6,6 +6,9 @@ const cors = require('cors')
 const morgan = require('morgan')
 const fileUpload = require('express-fileupload');
 // const { scheduleInit } = require('./scripts/clean_tmp_files')
+const { requestResponseHandler } = require('./handlers')
+const { errorResponse } = requestResponseHandler
+
 
 // config
 require('./config')
@@ -39,8 +42,16 @@ app.use(bodyParserHandler)
 // log middleware
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
 
+app.use(express.static('uploads'));
+
 // fileupload middleware
-app.use(fileUpload());
+app.use(fileUpload({
+  createParentPath: true,
+  limits: { fileSize: 2 * 1024 * 1024 },
+  limitHandler: (req, res) => {
+    return errorResponse(res, '上传文件不能超过2M')
+  }
+}));
 
 // api routes
 require('./routes')(app)
