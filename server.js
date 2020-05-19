@@ -27,6 +27,15 @@ const {
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/swagger.json');
 
+// template engine
+app.set('view engine', 'pug')
+app.get('/', function (req, res) {
+  res.render('index', { title: '全栈项目经验分享' })
+})
+
+app.use(express.static('public'))
+app.use(express.static('uploads'));
+
 // cors middleware
 app.use(cors())
 
@@ -41,8 +50,6 @@ app.use(bodyParserHandler)
 
 // log middleware
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
-
-app.use(express.static('uploads'));
 
 // fileupload middleware
 app.use(fileUpload({
