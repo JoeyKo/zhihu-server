@@ -29,8 +29,9 @@ const swaggerDocument = require('./swagger/swagger.json');
 
 // template engine
 app.set('view engine', 'pug')
+
 app.get('/', function (req, res) {
-  res.render('index', { title: '全栈项目经验分享' })
+  res.render('index', { })
 })
 
 app.use(express.static('public'))
