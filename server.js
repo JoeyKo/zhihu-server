@@ -6,6 +6,9 @@ const cors = require('cors')
 const morgan = require('morgan')
 const fileUpload = require('express-fileupload');
 // const { scheduleInit } = require('./scripts/clean_tmp_files')
+const { requestResponseHandler } = require('./handlers')
+const { errorResponse } = requestResponseHandler
+
 
 // config
 require('./config')
@@ -24,6 +27,15 @@ const {
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/swagger.json');
 
+// template engine
+app.set('view engine', 'pug')
+app.get('/', function (req, res) {
+  res.render('index', { title: '全栈项目经验分享' })
+})
+
+app.use(express.static('public'))
+app.use(express.static('uploads'));
+
 // cors middleware
 app.use(cors())
 
@@ -40,7 +52,15 @@ app.use(bodyParserHandler)
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
 
 // fileupload middleware
-app.use(fileUpload());
+app.use(fileUpload({
+  createParentPath: true,
+  useTempFiles : true,
+  tempFileDir : '/tmp/',
+  limits: { fileSize: 2 * 1024 * 1024 },
+  limitHandler: (req, res) => {
+    return errorResponse(res, '上传文件不能超过2M')
+  }
+}));
 
 // api routes
 require('./routes')(app)

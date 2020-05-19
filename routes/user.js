@@ -68,4 +68,16 @@ router.route('/profile')
     }
   })
 
+router.route('/upload-avatar')
+  .post(authenticate, async (req, res) => {
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return errorResponse(res, 'No files were uploaded');
+    } else {
+      const { uid } = res.locals
+      const avatar = req.files.avatar;
+      await UserCtrl.updateAvatar(uid, avatar)
+      successResponse(res, '用户头像已上传')
+    }
+  });
+
 module.exports = router;  

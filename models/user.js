@@ -41,7 +41,7 @@ const userSchema = new Schema({
     enum: ['admin', 'guest'],
     default: 'guest'
   },
-  avatar_url: {
+  avatar: {
     type: Schema.Types.ObjectId,
     ref: 'File'
   },

@@ -19,11 +19,7 @@ const fileSchema = new Schema({
     type: Number,
     required: true
   },
-  publicId: {
-    type: String,
-    required: true
-  },
-  url: {
+  path: {
     type: String,
     required: true
   }
