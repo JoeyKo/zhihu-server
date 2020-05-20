@@ -184,10 +184,10 @@ a {
   position: absolute;
     width: auto;
     height: auto;
-    top: -18px;
-    left: -18px;
-    right: -18px;
-    bottom: -18px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-image: url(/image/main_bg_14.png);
     background-position: center center;
     background-size: cover;
