@@ -27,15 +27,11 @@ const {
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/swagger.json');
 
-// template engine
-app.set('view engine', 'pug')
-
-app.get('/', function (req, res) {
-  res.render('index', { })
-})
-
 app.use(express.static('public'))
 app.use(express.static('uploads'));
+
+// template engine
+app.set('view engine', 'pug')
 
 // cors middleware
 app.use(cors())
@@ -52,6 +48,10 @@ app.use(bodyParserHandler)
 // log middleware
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
 
+app.get('/', function (req, res) {
+  res.render('index', { })
+})
+
 // fileupload middleware
 app.use(fileUpload({
   createParentPath: true,
@@ -62,6 +62,7 @@ app.use(fileUpload({
     return errorResponse(res, '上传文件不能超过2M')
   }
 }));
+
 
 // api routes
 require('./routes')(app)
