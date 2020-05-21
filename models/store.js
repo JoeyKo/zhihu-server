@@ -7,6 +7,10 @@ const storeSchema = new Schema({
     type: String,
     required: true,
   },
+  coverImage: {
+    type: Schema.Types.ObjectId,
+    ref: 'File'
+  },
   location: {
     type: String,
     required: true
