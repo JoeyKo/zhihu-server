@@ -31,13 +31,20 @@ router.route('/')
 router.route('/:id')
 	.get(async (req, res) => {
 		const { id } = req.params
-		const results = await StoreCtrl.getStore(id)
-		successResponseWithData(res, null, results)
+		const result = await StoreCtrl.getStore(id)
+		successResponseWithData(res, null, { store: result })
 	})
 
 	.put(async (req, res) => {
 		const { id } = req.params
 		const result = await StoreCtrl.updateStore(id, req.body)
-		successResponseWithData(res, null, result)
-	})
+		successResponseWithData(res, null, { store: result })
+  })
+  
+  .delete(async (req, res) => {
+    const { id } = req.params
+    const result = await StoreCtrl.delStore(id)
+    successResponseWithData(res, 'delete successfully!', result)
+  })
+
 module.exports = router

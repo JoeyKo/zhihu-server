@@ -41,7 +41,11 @@ class StoreController {
   }
 
   static async getStore(id) {
-    return await Store.findById(id)
+    return await Store.findById(id).populate('coverImage')
+  }
+
+  static async delStore(id) {
+    return await Store.deleteOne({ _id: id })
   }
 
 }
