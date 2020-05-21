@@ -37,7 +37,7 @@ class UserController {
       const token = generateAndStoreToken(userOnlyPwd)
       redisClient.set(`${userOnlyPwd.id}_${token}`, true, redis.print);
 
-      const userProfile = await User.findById(userOnlyPwd.id)
+      const userProfile = await User.findById(userOnlyPwd.id).populate('avatar')
       return { status: 1, token, data: userProfile, msg: 'login successfully!' }
     } else {
       return { status: 0, msg: 'wrong passwrod!' };
