@@ -63,10 +63,8 @@ class UserController {
     }
     avatar.mv(path);
     const newFile = await new File({ 
-      name: avatar.name, 
+      ...avatar, 
       type: 'image', 
-      format: avatar.mimetype, 
-      size: avatar.size, 
       path: path.replace('uploads', '')
     }).save();
 
