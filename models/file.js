@@ -11,7 +11,7 @@ const fileSchema = new Schema({
     enum: ['image', 'video', 'audio'],
     required: true,
   },
-  format: {
+  mimetype: {
     type: String,
     required: true
   },
