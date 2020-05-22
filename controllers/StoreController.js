@@ -3,6 +3,17 @@ const Store = require('../models/store')
 const File = require('../models/file')
 
 const UPLOAD_STORE_DIR = 'uploads/store'
+
+function moveFileAndReturnNewPath(image) {
+  const oldpath = 'uploads' + image.path
+  const newPath = UPLOAD_STORE_DIR + image.path.replace('tmp/tmp', 'coverImage')
+  if (!fs.existsSync(UPLOAD_STORE_DIR)){
+    fs.mkdirSync(UPLOAD_STORE_DIR);
+  }
+  fs.renameSync(oldpath, newPath)
+  return newPath
+}
+
 class StoreController {
   constructor() {
   }
@@ -16,17 +27,10 @@ class StoreController {
   static async createStore(params) {
     let storeData = { ...params }
     if (params.coverImage) {
-      const oldpath = 'uploads' + params.coverImage.path
-      const newPath = UPLOAD_STORE_DIR + params.coverImage.path.replace('tmp/tmp', 'coverImage')
-      if (!fs.existsSync(UPLOAD_STORE_DIR)){
-        fs.mkdirSync(UPLOAD_STORE_DIR);
-      }
-      fs.renameSync(oldpath, newPath)
+      const newPath = moveFileAndReturnNewPath(params.coverImage)
       const newFile = await new File({ 
-        name: params.coverImage.name, 
+        ...params.coverImage, 
         type: 'image', 
-        format: params.coverImage.mimetype, 
-        size: params.coverImage.size, 
         path: newPath.replace('uploads', '')
       }).save();
       storeData.coverImage = newFile.id
@@ -37,6 +41,15 @@ class StoreController {
   }
 
   static async updateStore(id, params) {
+    if (params.coverImage) {
+      const store = await Store.findById(id)
+      const newPath = moveFileAndReturnNewPath(params.coverImage)
+      await File.updateOne({ _id: store.coverImage }, { $set: {
+        ...params.coverImage,
+        path: newPath.replace('uploads', '')
+      } }, { $runValidators: true })
+      return await Store.updateOne({ _id: id }, { $set: { ...params, coverImage: store.coverImage } }, { $runValidators: true })
+    }
     return await Store.updateOne({ _id: id }, { $set: params }, { $runValidators: true })
   }
 

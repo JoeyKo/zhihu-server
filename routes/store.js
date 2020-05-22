@@ -36,9 +36,13 @@ router.route('/:id')
 	})
 
 	.put(async (req, res) => {
-		const { id } = req.params
-		const result = await StoreCtrl.updateStore(id, req.body)
-		successResponseWithData(res, null, { store: result })
+    try {
+      const { id } = req.params
+      const result = await StoreCtrl.updateStore(id, req.body)
+      successResponseWithData(res, null, { store: result })
+    } catch (err) {
+      errorResponse(res, err.message)
+    }
   })
   
   .delete(async (req, res) => {

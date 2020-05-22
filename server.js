@@ -5,7 +5,7 @@ const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
 const fileUpload = require('express-fileupload');
-// const { scheduleInit } = require('./scripts/clean_tmp_files')
+const { scheduleInit } = require('./scripts/clean_tmp_files')
 const { requestResponseHandler } = require('./handlers')
 const { errorResponse } = requestResponseHandler
 
@@ -80,8 +80,8 @@ app.use(globalErrorHandler)
 
 app.listen(process.env.SERVER_PORT, () => {
   console.log('Server is running.')
-  // // schedule init
-  // scheduleInit()
+  // schedule init
+  scheduleInit()
 });
 
 app.on('error', (e) => {
