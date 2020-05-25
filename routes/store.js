@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router();
+const authenticate = require('../middlewares/Authenticate');
 const StoreCtrl = require('../controllers/StoreController')
 const { requestResponseHandler } = require('../handlers')
 const { successResponseWithData, errorResponse } = requestResponseHandler
@@ -19,7 +20,7 @@ router.route('/')
     }
   })
 
-  .post(async (req, res) => {
+  .post(authenticate, async (req, res) => {
     try {
       const storeCreated = await StoreCtrl.createStore(req.body)
       successResponseWithData(res, null, { store: storeCreated })
@@ -35,7 +36,7 @@ router.route('/:id')
 		successResponseWithData(res, null, { store: result })
 	})
 
-	.put(async (req, res) => {
+	.put(authenticate, async (req, res) => {
     try {
       const { id } = req.params
       const result = await StoreCtrl.updateStore(id, req.body)
@@ -45,7 +46,7 @@ router.route('/:id')
     }
   })
   
-  .delete(async (req, res) => {
+  .delete(authenticate, async (req, res) => {
     const { id } = req.params
     const result = await StoreCtrl.delStore(id)
     successResponseWithData(res, 'delete successfully!', result)

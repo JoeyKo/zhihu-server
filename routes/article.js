@@ -42,7 +42,7 @@ router.route('/')
 
 
 router.route('/:id')
-  .get(authenticate, async (req, res) => {
+  .get(async (req, res) => {
     try {
       const { id } = req.params
       const result = await ArticleCtrl.getArticle(id)
