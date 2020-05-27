@@ -2,12 +2,21 @@ const express = require('express')
 const router = express.Router()
 const QuestionCtrl = require('../controllers/QuestionController')
 const { requestResponseHandler } = require('../handlers')
-const { successResponseWithData } = requestResponseHandler
+const { successResponseWithData, errorResponse } = requestResponseHandler
 
 router.route('/')
 	.get(async (req, res) => {
-		const results = await QuestionCtrl.listQuestions()
-		successResponseWithData(res, null, results)
+		try {
+      const result = await QuestionCtrl.listQuestions()
+      successResponseWithData(res, null, { 
+        data: result.docs, 
+        pageSize: result.limit, 
+        current: result.page, 
+        count: result.totalDocs, 
+      })
+    } catch (err) {
+      errorResponse(res, err.message)
+    }
 	})
 
 	.post(async (req, res) => {
