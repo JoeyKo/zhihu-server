@@ -90,6 +90,19 @@ a {
   transition: all .3s ease-in-out;
 }
 
+pre, code {
+  font-family: monospace,monospace;
+  font-size: 1em;
+}
+
+pre {
+  padding: 12px 15px;
+  color: rgb(255, 255, 255);
+  tab-size: 1.5em;
+  background: rgb(40, 44, 52);
+  overflow: auto;
+}
+
 .clearfix:before, .clearfix:after {
   content: " ";
   display: table;
