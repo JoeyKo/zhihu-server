@@ -44,12 +44,22 @@ class StoreController {
     if (params.coverImage) {
       const store = await Store.findById(id)
       const newPath = moveFileAndReturnNewPath(params.coverImage)
-      await File.updateOne({ _id: store.coverImage }, { $set: {
-        ...params.coverImage,
-        path: newPath.replace('uploads', '')
-      } }, { $runValidators: true })
-      return await Store.updateOne({ _id: id }, { $set: { ...params, coverImage: store.coverImage } }, { $runValidators: true })
+      if (store.coverImage) {
+        await File.updateOne({ _id: store.coverImage }, { $set: {
+          ...params.coverImage,
+          path: newPath.replace('uploads', '')
+        } }, { $runValidators: true })
+        return await Store.updateOne({ _id: id }, { $set: { ...params, coverImage: store.coverImage } }, { $runValidators: true })
+      } else {
+        const newFile = await new File({ 
+          ...params.coverImage, 
+          type: 'image', 
+          path: newPath.replace('uploads', '')
+        }).save();
+        return await Store.updateOne({ _id: id }, { $set: params, coverImage: newFile.id }, { $runValidators: true })
+      }
     }
+    
     return await Store.updateOne({ _id: id }, { $set: params }, { $runValidators: true })
   }
 
